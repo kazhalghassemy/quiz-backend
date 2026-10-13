@@ -1,0 +1,8 @@
+### App-Info
+GET http://localhost:8080/api/info
+
+### Health-Check
+GET http://localhost:8080/actuator/health
+
+### Alle Beans ansehen
+GET http://localhost:8080/actuator/beans
