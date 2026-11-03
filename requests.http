@@ -6,3 +6,10 @@ GET http://localhost:8080/actuator/health
 
 ### Alle Beans ansehen
 GET http://localhost:8080/actuator/beans
+
+
+### Info mit Konfiguration
+GET http://localhost:8080/api/info
+
+### Woher kommt die Bewertungsregel?
+GET http://localhost:8080/actuator/env/quiz.multiple-choice.scoring

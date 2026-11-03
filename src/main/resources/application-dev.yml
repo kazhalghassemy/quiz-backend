@@ -1,0 +1,55 @@
+#Das Grundprinzip: Einrückung = Punkte ->YAML ist nur eine andere Schreibweise für Namen mit Punkten.
+#Jede Einrückung steht für einen Punkt:
+#ist genau dasselbe wie spring.web.error.include-message=always
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true    # SQL im Log schön umbrochen statt in einer Zeile
+        generate_statistics: true # Hibernate zählt Abfragen, Zeit usw. und loggt es
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/quizdb
+    username: quiz
+    password: quiz
+
+  web:
+    error:
+      include-message: always
+
+#Die Stufen von leise nach laut: ERROR → WARN → INFO → DEBUG → TRACE.
+#Links steht ein Package oder eine Klasse, rechts wie laut sie loggen darf.
+#Deine log.debug(...)-Zeilen im AttemptService erscheinen deshalb nur, weil hier DEBUG steht.
+logging:
+  level:
+    de.kazhal.quizbackend: DEBUG # dein eigener Code: gesprächig
+    de.kazhal.quizbackend.question.evaluation.FreeTextEvaluator: TRACE # nur diese Klasse: maximal gesprächig
+    org.hibernate.SQL: DEBUG  # zeigt jedes SQL-Statement
+    org.flywaydb: INFO # Flyway: nur das Wichtigste
+  file:
+    name: logs/quiz-backend.log # Log zusätzlich in diese Datei schreiben
+
+management:
+  endpoint:
+    health:
+      show-details: always # /actuator/health zeigt auch DB-Status usw., nicht nur "UP"
+    env:
+      show-values: always # /actuator/env zeigt echte Werte statt ******
+    configprops:
+      show-values: always # /actuator/configprops ebenso
+
+quiz:
+  demo:
+    enabled: true   # QuizSimulationRunner + DemoConfig laufen beim Start
+  multiple-choice:
+    scoring: PARTIAL  # Teilpunkte bei Multiple Choice
+
+# Merkhilfe
+#Block	                Frage, die er beantwortet
+#spring.datasource	    Wo ist meine Datenbank?
+#spring.jpa	            Wie verhält sich Hibernate?
+#spring.web	            Wie verhält sich die Web-Schicht?
+#logging	            Wie viel will ich im Log sehen?
+#management	            Was zeigt mir der Actuator?
+#quiz	                Meine eigenen App-Einstellungen
