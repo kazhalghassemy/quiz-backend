@@ -9,12 +9,14 @@ QuizProperties	            Liest deine quiz:-Einstellungen aus der
                             und InfoController brauchen sie.	                    ✅ Ja. Ohne sie startet die App nicht.
 
 PageResponse	            Neu von heute, für GET /api/topics	                    ✅ Ja
+
 InfoController	            Endpunkt /api/info aus den Konfigurations-Tagen.
                             Zeigt Profil und Scoring-Modus.	                        ⚪ Nicht nötig, aber praktisch zum Prüfen.
                                                                                         Deine requests.http ruft ihn auf.
 QuizSimulationRunner	    Tag 8: spielt beim Start ein Quiz
                             durch und speichert Versuche	                        ⚪ Ab heute nicht mehr gebraucht,
                                                                                         du testest jetzt über REST
+
 DemoConfig	                Tag 2: Demo-Ausgaben beim Start	                        ⚪ Nicht nötig. Bei dir steht im Rumpf
                                                                                         nur noch ein Kommentar und ein log.info,
                                                                                         die Klasse tut also praktisch nichts.

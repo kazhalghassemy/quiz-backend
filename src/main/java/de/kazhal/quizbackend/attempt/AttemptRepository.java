@@ -18,4 +18,5 @@ public interface AttemptRepository extends JpaRepository<Attempt, Long> {
     Optional<Attempt> findWithAnswersById(Long id);
 
     List<Attempt> findByTopicIdOrderByStartedAtDesc(Long topicId);
+    boolean existsByTopicId(Long topicId);
 }

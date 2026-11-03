@@ -46,7 +46,10 @@ public class Topic {
     public int maxScore() {
         return questions.stream().mapToInt(Question::getPoints).sum();
     }
-
+    public void update(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
     public Long getId() { return id; }
     public String getName() { return name; }
     public String getDescription() { return description; }

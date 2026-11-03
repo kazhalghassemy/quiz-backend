@@ -41,7 +41,7 @@ management:
 
 quiz:
   demo:
-    enabled: true   # QuizSimulationRunner + DemoConfig laufen beim Start
+    enabled: false   # QuizSimulationRunner + DemoConfig laufen beim Start
   multiple-choice:
     scoring: PARTIAL  # Teilpunkte bei Multiple Choice
 
