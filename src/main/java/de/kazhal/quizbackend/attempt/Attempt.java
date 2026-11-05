@@ -41,10 +41,10 @@ public class Attempt {
     public AttemptAnswer recordAnswer(Question question, SubmittedAnswer submitted,
                                       EvaluationResult result, Instant answeredAt) {
         if (isFinished()) {
-            throw new IllegalStateException("Versuch " + id + " ist bereits abgeschlossen");
+            throw new AttemptAlreadyFinishedException(id);
         }
         if (hasAnswered(question.getId())) {
-            throw new IllegalStateException("Frage " + question.getId() + " wurde in diesem Versuch schon beantwortet");
+            throw new QuestionAlreadyAnsweredException(question.getId());
         }
         AttemptAnswer answer = new AttemptAnswer(this, question, submitted, result, answeredAt);
         answers.add(answer);
@@ -53,7 +53,7 @@ public class Attempt {
     }
     public void finish(Instant now) {
         if (isFinished()) {
-            throw new IllegalStateException("Versuch " + id + " ist bereits abgeschlossen");
+            throw new AttemptAlreadyFinishedException(id);
         }
         this.finishedAt = now;
     }

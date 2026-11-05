@@ -39,11 +39,7 @@ management:
     configprops:
       show-values: always # /actuator/configprops ebenso
 
-quiz:
-  demo:
-    enabled: false   # QuizSimulationRunner + DemoConfig laufen beim Start
-  multiple-choice:
-    scoring: PARTIAL  # Teilpunkte bei Multiple Choice
+
 
 # Merkhilfe
 #Block	                Frage, die er beantwortet

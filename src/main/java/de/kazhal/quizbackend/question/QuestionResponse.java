@@ -1,7 +1,10 @@
 package de.kazhal.quizbackend.question;
 
 import java.util.List;
-
+/*
+die Tabelle question in postgresql
+alle Attribute sind gleich, außer die zwei Listen
+ */
 public record QuestionResponse(
         Long id,
         Long topicId,
