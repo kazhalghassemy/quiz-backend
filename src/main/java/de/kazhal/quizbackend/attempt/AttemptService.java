@@ -96,4 +96,9 @@ public class AttemptService {
         return attemptRepository.findWithAnswersById(attemptId)
                 .orElseThrow(() -> new AttemptNotFoundException(attemptId));
     }
+
+    public List<AttemptSummaryResponse> findAttemptsOfTopic(Long topicId) {
+        topicService.getTopic(topicId);   // 404, falls es das Thema nicht gibt
+        return attemptRepository.findSummariesByTopicId(topicId);
+    }
 }

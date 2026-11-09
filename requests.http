@@ -13,3 +13,8 @@ GET http://localhost:8080/api/info
 
 ### Woher kommt die Bewertungsregel?
 GET http://localhost:8080/actuator/env/quiz.multiple-choice.scoring
+
+### Versuche eines Themas, neueste zuerst
+GET http://localhost:8080/api/topics/2/attempts
+### Unbekanntes Thema -> 404
+GET http://localhost:8080/api/topics/999/attempts

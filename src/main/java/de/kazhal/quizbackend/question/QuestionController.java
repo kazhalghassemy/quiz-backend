@@ -17,21 +17,21 @@ public class QuestionController {
     }
 
     @GetMapping("/topics/{topicId}/questions")
-    public List<QuestionResponse> getQuestions(@PathVariable Long topicId,
-                                               @RequestParam(required = false) Difficulty
+    public List<QuestionAdminResponse> getQuestions(@PathVariable Long topicId,
+                                                    @RequestParam(required = false) Difficulty
                                                        difficulty) {
         return questionService.findQuestions(topicId, difficulty);
     }
 
     @GetMapping("/questions/{id}")
-    public QuestionResponse getQuestion(@PathVariable Long id) {
+    public QuestionAdminResponse getQuestion(@PathVariable Long id) {
         return questionService.findQuestion(id);
     }
 
     @PostMapping("/topics/{topicId}/questions")
-    public ResponseEntity<QuestionResponse> createQuestion(@PathVariable Long topicId,
-                                                           @RequestBody QuestionRequest request) {
-        QuestionResponse created = questionService.createQuestion(topicId, request);
+    public ResponseEntity<QuestionAdminResponse> createQuestion(@PathVariable Long topicId,
+                                                                @RequestBody QuestionRequest request) {
+        QuestionAdminResponse created = questionService.createQuestion(topicId, request);
         URI location = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/questions/{id}")
                 .buildAndExpand(created.id())

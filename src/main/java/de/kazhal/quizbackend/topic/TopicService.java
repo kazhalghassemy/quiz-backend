@@ -17,21 +17,23 @@ public class TopicService {
     private final TopicRepository topicRepository;
     private final QuestionRepository questionRepository;
     private final AttemptRepository attemptRepository;
+    private final TopicMapper topicMapper;
 
     public TopicService(TopicRepository topicRepository, QuestionRepository questionRepository,
-                        AttemptRepository attemptRepository) {
+                        AttemptRepository attemptRepository, TopicMapper topicMapper) {
         this.topicRepository = topicRepository;
         this.questionRepository = questionRepository;
         this.attemptRepository = attemptRepository;
+        this.topicMapper = topicMapper;
     }
 
     // ---------- für die REST-API (liefern Response-Records) ----------
     public PageResponse<TopicResponse> findTopics(Pageable pageable) {
-        return PageResponse.from(topicRepository.findAll(pageable).map(TopicResponse::from));
+        return PageResponse.from(topicRepository.findAll(pageable).map(topicMapper::toResponse));
     }
 
     public TopicResponse findTopic(Long id) {
-        return TopicResponse.from(getTopic(id));
+        return topicMapper.toResponse(getTopic(id));
     }
 
     @Transactional
@@ -40,7 +42,7 @@ public class TopicService {
             throw new TopicNameAlreadyExistsException(request.name());
         }
         Topic saved = topicRepository.save(new Topic(request.name(), request.description()));
-        return TopicResponse.from(saved);
+        return topicMapper.toResponse(saved);
     }
 
     @Transactional
@@ -51,7 +53,7 @@ public class TopicService {
             throw new TopicNameAlreadyExistsException(request.name());
         }
         topic.update(request.name(), request.description());   // kein save(): Dirty Checking
-        return TopicResponse.from(topic);
+        return topicMapper.toResponse(topic);
     }
 
     @Transactional
