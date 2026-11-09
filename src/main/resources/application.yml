@@ -23,34 +23,3 @@ quiz:
   max-points-per-question: 100
   multiple-choice:
     scoring: ALL_OR_NOTHING
-
-
-#Frage 1: Kann man application.yml weglassen?
-#
-#Die ganze Datei nicht. Dort steht viel mehr als nur quiz::
-#
-#Eintrag in application.yml	                |Was passiert ohne ihn?
-#---------------------------------------------------------------------------------------
-#spring.application.name: quiz-backend	    |❌ App startet nicht. InfoController verlangt den Wert mit
-#                                             @Value("${spring.application.name}") und hat keinen Standardwert.
-#spring.jpa.open-in-view: false	            |Spring schaltet es wieder ein (Standard true). Das Experiment
-#  „Entity direkt zurückgeben → 500“        |von heute würde dann nicht mehr scheitern, und du lernst den Effekt nicht kennen.
-#ddl-auto: validate	                        |Hibernate prüft nicht mehr, ob Entities und Tabellen zusammenpassen.
-#default_batch_fetch_size: 20	            |mehr SQL-Abfragen (N+1-Problem)
-#management.endpoints...include	            |Die Actuator-Endpunkte beans, env usw. sind nicht mehr erreichbar.
-#
-#Nur den quiz:-Block darin, das ginge. Die drei Werte dort sind genau dieselben wie die @DefaultValues im Record:
-#
-#yaml
-#quiz:
-#  default-time-limit: 30s           # = @DefaultValue("30s")
-#  max-points-per-question: 100      # = @DefaultValue("100")
-#  multiple-choice:
-#    scoring: ALL_OR_NOTHING         # = @DefaultValue("ALL_OR_NOTHING")
-#
-#Ohne diesen Block verhält sich die App identisch. Ob man ihn behält, ist eine Stilfrage:
-#
-#   Weglassen: Die Werte stehen nicht doppelt da.
-#   Behalten: Wer die YAML öffnet, sieht sofort, welche Einstellungen es gibt, und muss nicht in den Java-Code schauen.
-#
-#Viele Teams behalten ihn als Dokumentation. Den Block in application-dev.yml (scoring: PARTIAL) brauchst du auf jeden Fall, denn er weicht vom Standard ab.

@@ -41,11 +41,3 @@ management:
 
 
 
-# Merkhilfe
-#Block	                Frage, die er beantwortet
-#spring.datasource	    Wo ist meine Datenbank?
-#spring.jpa	            Wie verhält sich Hibernate?
-#spring.web	            Wie verhält sich die Web-Schicht?
-#logging	            Wie viel will ich im Log sehen?
-#management	            Was zeigt mir der Actuator?
-#quiz	                Meine eigenen App-Einstellungen
