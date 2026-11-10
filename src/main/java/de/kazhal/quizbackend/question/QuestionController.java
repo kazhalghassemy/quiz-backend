@@ -1,5 +1,6 @@
 package de.kazhal.quizbackend.question;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -19,7 +20,7 @@ public class QuestionController {
     @GetMapping("/topics/{topicId}/questions")
     public List<QuestionAdminResponse> getQuestions(@PathVariable Long topicId,
                                                     @RequestParam(required = false) Difficulty
-                                                       difficulty) {
+                                                            difficulty) {
         return questionService.findQuestions(topicId, difficulty);
     }
 
@@ -30,7 +31,7 @@ public class QuestionController {
 
     @PostMapping("/topics/{topicId}/questions")
     public ResponseEntity<QuestionAdminResponse> createQuestion(@PathVariable Long topicId,
-                                                                @RequestBody QuestionRequest request) {
+                                                                @Valid @RequestBody QuestionRequest request) {
         QuestionAdminResponse created = questionService.createQuestion(topicId, request);
         URI location = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/questions/{id}")

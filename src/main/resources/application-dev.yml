@@ -1,13 +1,9 @@
-#Das Grundprinzip: Einrückung = Punkte ->YAML ist nur eine andere Schreibweise für Namen mit Punkten.
-#Jede Einrückung steht für einen Punkt:
-#ist genau dasselbe wie spring.web.error.include-message=always
-
 spring:
   jpa:
     properties:
       hibernate:
-        format_sql: true    # SQL im Log schön umbrochen statt in einer Zeile
-        generate_statistics: true # Hibernate zählt Abfragen, Zeit usw. und loggt es
+        format_sql: true
+        generate_statistics: true
 
   datasource:
     url: jdbc:postgresql://localhost:5433/quizdb
@@ -17,10 +13,9 @@ spring:
   web:
     error:
       include-message: always
+      include-binding-errors: always
 
-#Die Stufen von leise nach laut: ERROR → WARN → INFO → DEBUG → TRACE.
-#Links steht ein Package oder eine Klasse, rechts wie laut sie loggen darf.
-#Deine log.debug(...)-Zeilen im AttemptService erscheinen deshalb nur, weil hier DEBUG steht.
+
 logging:
   level:
     de.kazhal.quizbackend: DEBUG # dein eigener Code: gesprächig

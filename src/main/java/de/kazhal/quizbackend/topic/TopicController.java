@@ -11,6 +11,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/topics")
 public class TopicController {
@@ -32,7 +34,7 @@ public class TopicController {
     }
 
     @PostMapping
-    public ResponseEntity<TopicResponse> createTopic(@RequestBody TopicRequest request) {
+    public ResponseEntity<TopicResponse> createTopic(@Valid @RequestBody TopicRequest request) {
         TopicResponse created = topicService.createTopic(request);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -42,7 +44,7 @@ public class TopicController {
     }
 
     @PutMapping("/{id}")
-    public TopicResponse updateTopic(@PathVariable Long id, @RequestBody TopicRequest request) {
+    public TopicResponse updateTopic(@PathVariable Long id, @Valid @RequestBody TopicRequest request) {
         return topicService.updateTopic(id, request);
     }
 
@@ -51,4 +53,6 @@ public class TopicController {
     public void deleteTopic(@PathVariable Long id) {
         topicService.deleteTopic(id);
     }
+
+
 }
