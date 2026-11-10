@@ -1,11 +1,10 @@
 package de.kazhal.quizbackend.attempt;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.CONFLICT)
-public class TopicHasNoQuestionsException extends RuntimeException {
+import de.kazhal.quizbackend.common.error.ConflictException;
+
+public class TopicHasNoQuestionsException extends ConflictException {
     public TopicHasNoQuestionsException(Long topicId) {
-        super("Thema " + topicId + " hat keine aktiven Fragen");
+        super(" TOPIC_HAS_NO_QUESTIONS", "Thema mit ID " + topicId + " nicht gefunden");
     }
 }

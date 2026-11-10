@@ -1,11 +1,10 @@
 package de.kazhal.quizbackend.topic;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.CONFLICT)
-public class TopicInUseException extends RuntimeException {
+import de.kazhal.quizbackend.common.error.ConflictException;
+
+public class TopicInUseException extends ConflictException {
     public TopicInUseException(Long id) {
-        super("Thema " + id + " hat bereits Quiz-Versuche und kann nicht gelöscht werden");
+        super(" TOPIC_IN_USE", "Thema mit ID " + id + " nicht gefunden");
     }
 }

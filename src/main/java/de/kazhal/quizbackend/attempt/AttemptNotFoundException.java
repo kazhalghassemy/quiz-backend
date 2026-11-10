@@ -1,8 +1,10 @@
 package de.kazhal.quizbackend.attempt;
 
-public class AttemptNotFoundException extends RuntimeException {
+import de.kazhal.quizbackend.common.error.NotFoundException;
+
+public class AttemptNotFoundException extends NotFoundException {
 
     public AttemptNotFoundException(Long id) {
-        super("Versuch mit ID " + id + " nicht gefunden");
+        super("ATTEMPT_NOT_FOUND", "Thema mit ID " + id + " nicht gefunden");
     }
 }

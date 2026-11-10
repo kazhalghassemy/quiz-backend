@@ -1,11 +1,10 @@
 package de.kazhal.quizbackend.attempt;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.CONFLICT)
-public class AttemptAlreadyFinishedException extends RuntimeException {
+import de.kazhal.quizbackend.common.error.ConflictException;
+
+public class AttemptAlreadyFinishedException extends ConflictException {
     public AttemptAlreadyFinishedException(Long attemptId) {
-        super("Versuch " + attemptId + " ist bereits abgeschlossen");
+        super("ATTEMPT_ALREADY_FINISHED", "Versuch " + attemptId + " ist bereits abgeschlossen");
     }
 }

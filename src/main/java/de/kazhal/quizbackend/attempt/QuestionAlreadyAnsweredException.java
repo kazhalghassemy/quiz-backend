@@ -1,11 +1,9 @@
 package de.kazhal.quizbackend.attempt;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-@ResponseStatus(HttpStatus.CONFLICT)
-public class QuestionAlreadyAnsweredException extends RuntimeException {
+import de.kazhal.quizbackend.common.error.ConflictException;
+public class QuestionAlreadyAnsweredException extends ConflictException {
     public QuestionAlreadyAnsweredException(Long questionId) {
-        super("Frage " + questionId + " wurde in diesem Versuch schon beantwortet");
+        super("QUESTION_ALREADY_ANSWERED", "Thema mit ID " + questionId + " nicht gefunden");
     }
 }
+

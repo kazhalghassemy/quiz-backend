@@ -18,3 +18,23 @@ GET http://localhost:8080/actuator/env/quiz.multiple-choice.scoring
 GET http://localhost:8080/api/topics/2/attempts
 ### Unbekanntes Thema -> 404
 GET http://localhost:8080/api/topics/999/attempts
+### 1. Unbekanntes Thema -> 404
+GET http://localhost:8080/api/topics/999
+
+### 2. Doppelter Themenname -> 409
+POST http://localhost:8080/api/topics
+
+### 3. Validierung -> 400 mit Feldliste
+POST http://localhost:8080/api/topics/1/questions
+
+### 4. Ungültiges JSON -> 400
+POST http://localhost:8080/api/topics
+
+### 5. Unbekannter Enum-Wert -> 400
+GET http://localhost:8080/api/topics/1/questions?difficulty=SUPER
+
+### 6. Unbekanntes Sortierfeld -> 400 (vorher 500)
+GET http://localhost:8080/api/topics?sort=foo
+
+### 7. Thema mit Versuchen löschen -> 409
+DELETE http://localhost:8080/api/topics/1

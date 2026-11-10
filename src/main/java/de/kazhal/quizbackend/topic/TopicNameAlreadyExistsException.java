@@ -1,11 +1,10 @@
 package de.kazhal.quizbackend.topic;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.CONFLICT)
-public class TopicNameAlreadyExistsException extends RuntimeException {
+import de.kazhal.quizbackend.common.error.ConflictException;
+
+public class TopicNameAlreadyExistsException extends ConflictException {
     public TopicNameAlreadyExistsException(String name) {
-        super("Ein Thema mit dem Namen '" + name + "' existiert bereits");
+       super(" TOPIC_NAME_TAKEN", "Thema mit ID " + name + " nicht gefunden");
     }
 }

@@ -1,11 +1,10 @@
 package de.kazhal.quizbackend.question;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import de.kazhal.quizbackend.common.error.NotFoundException;
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class QuestionNotFoundException extends RuntimeException {
+
+public class QuestionNotFoundException extends NotFoundException {
     public QuestionNotFoundException(Long id) {
-        super("Frage mit ID " + id + " nicht gefunden");
+        super(" QUESTION_NOT_FOUND\n", "Thema mit ID " + id + " nicht gefunden");
     }
 }
