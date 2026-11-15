@@ -114,4 +114,7 @@ public class Question {
     public boolean isActive() { return active; }
     public List<AnswerOption> getOptions() { return Collections.unmodifiableList(options); }
     public List<AcceptedAnswer> getAcceptedAnswers() { return Collections.unmodifiableList(acceptedAnswers); }
+    public void deactivate() {
+        this.active = false;
+    }
 }
