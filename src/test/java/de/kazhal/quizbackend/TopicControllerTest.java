@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 // Spring Boot 4:  import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -40,7 +41,8 @@ class TopicControllerTest {
     }
 
     @Test
-    @DisplayName("POST mit leerem Namen: 400 im ProblemDetail-Format, Service wird nie aufgerufen")
+    @WithMockUser
+    @DisplayName("POST mit gültigem Body: 201, Location-Header und JSON")
     void createTopicBlankName() throws Exception {
         mockMvc.perform(post("/api/topics")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -78,4 +80,18 @@ class TopicControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value("TOPIC_NAME_TAKEN"));
     }
+
+
+    @Test
+    @DisplayName("POST ohne Anmeldung: 401")
+    void createTopicWithoutLogin() throws Exception {
+        mockMvc.perform(post("/api/topics")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                { "name": "Spring Boot" }
+                                """))
+                .andExpect(status().isUnauthorized());
+        verifyNoInteractions(topicService);
+    }
+
 }

@@ -34,5 +34,10 @@ management:
     configprops:
       show-values: always # /actuator/configprops ebenso
 
-
+quiz:
+  multiple-choice:
+    scoring: PARTIAL
+  admin:
+    email: admin@quiz.local
+    password: admin12345
 

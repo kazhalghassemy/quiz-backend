@@ -16,8 +16,10 @@ GET http://localhost:8080/actuator/env/quiz.multiple-choice.scoring
 
 ### Versuche eines Themas, neueste zuerst
 GET http://localhost:8080/api/topics/2/attempts
+
 ### Unbekanntes Thema -> 404
 GET http://localhost:8080/api/topics/999/attempts
+
 ### 1. Unbekanntes Thema -> 404
 GET http://localhost:8080/api/topics/999
 
@@ -38,3 +40,52 @@ GET http://localhost:8080/api/topics?sort=foo
 
 ### 7. Thema mit Versuchen löschen -> 409
 DELETE http://localhost:8080/api/topics/1
+
+
+### 1. Registrieren -> 201
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{ "email": "anna@example.com", "password": "geheim123", "displayName": "Anna" }
+
+### 2. Noch einmal -> 409 EMAIL_TAKEN
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{ "email": "Anna@Example.com", "password": "anderes123", "displayName": "Anna 2" }
+
+### 3. Ungültige Eingaben -> 400 mit drei Feldfehlern
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{ "email": "keine-mail", "password": "kurz", "displayName": "" }
+
+### 4. Rolle mitschicken -> trotzdem LEARNER
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{ "email": "mallory@example.com", "password": "geheim123", "displayName": "Mallory", "role": "ADMIN"
+}
+
+### 5. Wer bin ich? Ohne Anmeldung -> 401
+GET http://localhost:8080/api/auth/me
+
+### 6. Wer bin ich? Mit Anmeldung -> 200
+GET http://localhost:8080/api/auth/me
+Authorization: Basic anna@example.com geheim123
+
+### 7. Admin -> Rolle ADMIN
+GET http://localhost:8080/api/auth/me
+Authorization: Basic admin@quiz.local admin12345
+
+### 8. Themenliste ist öffentlich -> 200
+GET http://localhost:8080/api/topics
+
+### 9. Admin-Sicht mit Lösungen ohne Anmeldung -> 401
+GET http://localhost:8080/api/topics/1/questions
+
+### 10. Quiz starten ohne Anmeldung -> 401
+POST http://localhost:8080/api/attempts
+Content-Type: application/json
+
+{ "topicId": 2 }
