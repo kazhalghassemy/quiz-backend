@@ -1,6 +1,7 @@
 package de.kazhal.quizbackend;
 
 
+import de.kazhal.quizbackend.user.TokenService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,5 +102,76 @@ class AuthIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value(email))
                 .andExpect(jsonPath("$.role").value("LEARNER"));
+    }
+
+    private String login(String email, String password) throws Exception {
+        String json = mockMvc.perform(post("/api/auth/login")
+                        .contentType(APPLICATION_JSON)
+                        .content("""
+                                { "email": "%s", "password": "%s" }
+                                """.formatted(email, password)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.tokenType").value("Bearer"))
+                .andReturn().getResponse().getContentAsString();
+        return com.jayway.jsonpath.JsonPath.parse(json).read("$.token");
+    }
+    @Test
+    @DisplayName("Login liefert ein Token, mit dem /me funktioniert")
+    void loginAndMe() throws Exception {
+        String email = uniqueEmail();
+        register(email, "geheim123");
+        String token = login(email, "geheim123");
+        mockMvc.perform(get("/api/auth/me").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value(email));
+    }
+    @Test
+    @DisplayName("In der Datenbank steht nur der SHA-256-Hash des Tokens")
+    void tokenStoredAsHash() throws Exception {
+        String email = uniqueEmail();
+        register(email, "geheim123");
+        String token = login(email, "geheim123");
+        Integer withHash = jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM auth_token WHERE token_hash = ?", Integer.class,
+                TokenService.hash(token));
+        Integer withPlainToken = jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM auth_token WHERE token_hash = ?", Integer.class, token);
+        assertThat(withHash).isEqualTo(1);
+        assertThat(withPlainToken).isZero();
+    }
+    @Test
+    @DisplayName("Falsches Passwort: 401 INVALID_CREDENTIALS")
+    void wrongPassword() throws Exception {
+        String email = uniqueEmail();
+        register(email, "geheim123");
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(APPLICATION_JSON)
+                        .content("""
+                                { "email": "%s", "password": "falsch123" }
+                                """.formatted(email)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value("INVALID_CREDENTIALS"));
+    }
+    @Test
+    @DisplayName("Ohne, mit kaputtem und mit abgelaufenem Token: 401 UNAUTHORIZED")
+    void invalidTokens() throws Exception {
+        mockMvc.perform(get("/api/auth/me"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value("UNAUTHORIZED"));
+        mockMvc.perform(get("/api/auth/me").header("Authorization", "Bearer gibt-es-nicht"))
+                .andExpect(status().isUnauthorized());
+        String email = uniqueEmail();
+        register(email, "geheim123");
+        String token = login(email, "geheim123");
+        jdbcTemplate.update("UPDATE auth_token SET expires_at = now() - interval '1 minute' WHERE token_hash = ?",
+                TokenService.hash(token));
+        mockMvc.perform(get("/api/auth/me").header("Authorization", "Bearer " + token))
+                .andExpect(status().isUnauthorized());
+    }
+    @Test
+    @DisplayName("Öffentliche Endpunkte funktionieren auch mit kaputtem Token")
+    void publicEndpointWithBrokenToken() throws Exception {
+        mockMvc.perform(get("/api/topics").header("Authorization", "Bearer kaputt"))
+                .andExpect(status().isOk());
     }
 }

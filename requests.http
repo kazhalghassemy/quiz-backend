@@ -89,3 +89,31 @@ POST http://localhost:8080/api/attempts
 Content-Type: application/json
 
 { "topicId": 2 }
+
+### Login als Anna -> Token merken
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{ "email": "anna@example.com", "password": "geheim123" }
+> {% client.global.set("token", response.body.token); %}
+
+### Login als Admin -> Token merken
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{ "email": "admin@quiz.local", "password": "admin12345" }
+> {% client.global.set("adminToken", response.body.token); %}
+
+### Wer bin ich? (Anna)
+GET http://localhost:8080/api/auth/me
+Authorization: Bearer {{token}}
+
+### Falsches Passwort -> 401 INVALID_CREDENTIALS
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{ "email": "anna@example.com", "password": "falsch123" }
+
+### Kaputtes Token -> 401 UNAUTHORIZED im ProblemDetail-Format
+GET http://localhost:8080/api/auth/me
+Authorization: Bearer kaputt

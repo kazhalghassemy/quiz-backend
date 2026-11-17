@@ -1,6 +1,7 @@
 package de.kazhal.quizbackend;
 
 import de.kazhal.quizbackend.topic.*;
+import de.kazhal.quizbackend.user.TokenService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,8 @@ class TopicControllerTest {
     private MockMvc mockMvc;
     @MockitoBean
     private TopicService topicService;
-
+    @MockitoBean
+    private TokenService tokenService;
     @Test
     @DisplayName("POST mit gültigem Body: 201, Location-Header und JSON")
     void createTopic() throws Exception {

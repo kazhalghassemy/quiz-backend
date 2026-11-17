@@ -10,9 +10,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController {
     private final UserService userService;
-
-    public AuthController(UserService userService) {
+    private final AuthService authService;
+    public AuthController(UserService userService, AuthService authService) {
         this.userService = userService;
+        this.authService = authService;
+    }
+    @PostMapping("/login")
+    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
+        return authService.login(request);
     }
 
     @PostMapping("/register")
@@ -24,4 +29,6 @@ public class AuthController {
     public UserResponse me(@AuthenticationPrincipal QuizUserDetails principal) {
         return userService.findUser(principal.id());
     }
+
+
 }

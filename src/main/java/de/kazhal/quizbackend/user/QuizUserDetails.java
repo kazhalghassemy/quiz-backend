@@ -13,7 +13,9 @@ public record QuizUserDetails(Long id, String email, String passwordHash, Role r
         return new QuizUserDetails(user.getId(), user.getEmail(), user.getPasswordHash(),
                 user.getRole());
     }
-
+    public static QuizUserDetails withoutPassword(AppUser user) {
+        return new QuizUserDetails(user.getId(), user.getEmail(), null, user.getRole());
+    }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));

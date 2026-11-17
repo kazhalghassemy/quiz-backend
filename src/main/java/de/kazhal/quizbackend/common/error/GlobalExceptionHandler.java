@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -53,7 +55,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return problem(HttpStatus.INTERNAL_SERVER_ERROR, "Interner Fehler", "INTERNAL_ERROR",
                 "Ein unerwarteter Fehler ist aufgetreten");
     }
-    // ---------- Spring-MVC-Fehler anpassen (aus ResponseEntityExceptionHandler) ----------
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ProblemDetail handleAuthentication(AuthenticationException ex) {
+        if (ex instanceof BadCredentialsException) {
+            return problem(HttpStatus.UNAUTHORIZED, "Anmeldung fehlgeschlagen", "INVALID_CREDENTIALS",
+                    "E-Mail oder Passwort ist falsch");
+        }
+        return problem(HttpStatus.UNAUTHORIZED, "Nicht angemeldet", "UNAUTHORIZED",
+                "Für diese Anfrage ist eine Anmeldung nötig");
+    }
+    // -----
+    // ----- Spring-MVC-Fehler anpassen (aus ResponseEntityExceptionHandler) ----------
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status,
@@ -92,4 +105,5 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         pd.setProperty("code", code);
         return pd;
     }
+
 }
