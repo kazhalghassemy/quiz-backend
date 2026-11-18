@@ -24,4 +24,7 @@ public class AuthService {
         return new LoginResponse(issued.token(), "Bearer", issued.expiresAt(),
                 userService.findUser(principal.id()));
     }
+    public void logout(String token) {
+        tokenService.revoke(token);
+    }
 }

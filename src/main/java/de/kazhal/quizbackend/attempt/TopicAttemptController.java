@@ -1,5 +1,7 @@
 package de.kazhal.quizbackend.attempt;
 
+import de.kazhal.quizbackend.user.QuizUserDetails;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +17,8 @@ public class TopicAttemptController {
     }
 
     @GetMapping("/api/topics/{topicId}/attempts")
-    public List<AttemptSummaryResponse> getAttemptsOfTopic(@PathVariable Long topicId) {
-        return attemptService.findAttemptsOfTopic(topicId);
+    public List<AttemptSummaryResponse> getAttemptsOfTopic(@PathVariable Long topicId,
+                                                           @AuthenticationPrincipal QuizUserDetails user) {  // ← NEU
+        return attemptService.findAttemptsOfTopic(topicId, user);                                             // ← user NEU
     }
 }

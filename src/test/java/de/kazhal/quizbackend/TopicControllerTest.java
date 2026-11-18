@@ -27,7 +27,9 @@ class TopicControllerTest {
     private TopicService topicService;
     @MockitoBean
     private TokenService tokenService;
+
     @Test
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("POST mit gültigem Body: 201, Location-Header und JSON")
     void createTopic() throws Exception {
         when(topicService.createTopic(any())).thenReturn(new TopicResponse(5L, "Spring Boot", "Beans und JPA"));
@@ -40,6 +42,20 @@ class TopicControllerTest {
                 .andExpect(header().string("Location", "http://localhost/api/topics/5"))
                 .andExpect(jsonPath("$.id").value(5))
                 .andExpect(jsonPath("$.name").value("Spring Boot"));
+    }
+
+    @Test
+    @WithMockUser(roles = "LEARNER")
+    @DisplayName("POST als LEARNER: 403 FORBIDDEN, Service wird nie aufgerufen")
+    void createTopicAsLearner() throws Exception {
+        mockMvc.perform(post("/api/topics")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                { "name": "Spring Boot" }
+                                """))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value("FORBIDDEN"));
+        verifyNoInteractions(topicService);
     }
 
     @Test

@@ -5,6 +5,7 @@ import de.kazhal.quizbackend.question.Question;
 import de.kazhal.quizbackend.question.evaluation.EvaluationResult;
 import de.kazhal.quizbackend.question.evaluation.SubmittedAnswer;
 import de.kazhal.quizbackend.topic.Topic;
+import de.kazhal.quizbackend.user.AppUser;
 import jakarta.persistence.*;
 
 import java.time.Instant;
@@ -30,6 +31,21 @@ public class Attempt {
     @OneToMany(mappedBy = "attempt", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
     private Set<AttemptAnswer> answers = new LinkedHashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id")
+    private AppUser user;
+    public Attempt(AppUser user, Topic topic, int maxScore, Instant startedAt) {
+        this.user = user;
+        this.topic = topic;
+        this.maxScore = maxScore;
+        this.startedAt = startedAt;
+    }
+    public boolean belongsTo(Long userId) {
+        return user.getId().equals(userId);
+    }
+    public AppUser getUser() { return user; }
+
     protected Attempt() {
         // für JPA
     }

@@ -1,6 +1,7 @@
 package de.kazhal.quizbackend.user;
 
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,6 +30,10 @@ public class AuthController {
     public UserResponse me(@AuthenticationPrincipal QuizUserDetails principal) {
         return userService.findUser(principal.id());
     }
-
+    @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
+        authService.logout(authorization.substring("Bearer ".length()).trim());
+    }
 
 }

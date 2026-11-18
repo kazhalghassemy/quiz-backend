@@ -20,15 +20,15 @@ public interface AttemptRepository extends JpaRepository<Attempt, Long> {
 
     List<Attempt> findByTopicIdOrderByStartedAtDesc(Long topicId);
     boolean existsByTopicId(Long topicId);
-
     @Query("""
-            select new de.kazhal.quizbackend.attempt.AttemptSummaryResponse(
-                a.id, a.startedAt, a.finishedAt, a.totalScore, a.maxScore)
-            from Attempt a
-            where a.topic.id = :topicId
-            order by a.startedAt desc
-            """)
-    List<AttemptSummaryResponse> findSummariesByTopicId(@Param("topicId") Long topicId);
+        select new de.kazhal.quizbackend.attempt.AttemptSummaryResponse(
+        a.id, a.startedAt, a.finishedAt, a.totalScore, a.maxScore)
+        from Attempt a
+        where a.topic.id = :topicId and a.user.id = :userId
+        order by a.startedAt desc
+        """)
+    List<AttemptSummaryResponse> findSummariesByTopicIdAndUserId(@Param("topicId") Long topicId,
+                                                                 @Param("userId") Long userId);
 }
 
 

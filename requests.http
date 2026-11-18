@@ -117,3 +117,57 @@ Content-Type: application/json
 ### Kaputtes Token -> 401 UNAUTHORIZED im ProblemDetail-Format
 GET http://localhost:8080/api/auth/me
 Authorization: Bearer kaputt
+
+
+### Anna will ein Thema anlegen -> 403
+POST http://localhost:8080/api/topics
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "name": "Von Anna" }
+
+
+### Anna will die Lösungen sehen -> 403
+GET http://localhost:8080/api/topics/1/questions
+Authorization: Bearer {{token}}
+
+### Admin sieht die Lösungen -> 200
+GET http://localhost:8080/api/topics/1/questions
+Authorization: Bearer {{adminToken}}
+
+### Anna startet ein Quiz -> 201
+POST http://localhost:8080/api/attempts
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "topicId": 2 }
+> {% client.global.set("annaAttemptId", response.body.attemptId); %}
+
+### Admin versucht, in Annas Versuch zu antworten -> 404
+POST http://localhost:8080/api/attempts/{{annaAttemptId}}/answers
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "questionId": 4, "freeText": "select" }
+
+### Admin liest Annas Versuch -> 200
+GET http://localhost:8080/api/attempts/{{annaAttemptId}}
+Authorization: Bearer {{adminToken}}
+
+### Actuator nur für Admins: als Anna -> 403
+GET http://localhost:8080/actuator/env
+Authorization: Bearer {{token}}
+
+### CORS-Preflight von Angular -> 200 mit Access-Control-Allow-Origin
+OPTIONS http://localhost:8080/api/topics
+Origin: http://localhost:4200
+Access-Control-Request-Method: POST
+Access-Control-Request-Headers: authorization,content-type
+
+### Logout -> 204
+POST http://localhost:8080/api/auth/logout
+Authorization: Bearer {{token}}
+
+### Danach -> 401
+GET http://localhost:8080/api/auth/me
+Authorization: Bearer {{token}}

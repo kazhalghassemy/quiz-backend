@@ -49,6 +49,10 @@ public class TokenService {
                 .filter(t -> t.isValidAt(now))
                 .map(t -> QuizUserDetails.withoutPassword(t.getUser()));
     }
+    @Transactional
+    public void revoke(String token) {
+        authTokenRepository.findWithUserByTokenHash(hash(token)).ifPresent(AuthToken::revoke);
+    }
     public static String generateToken() {
         byte[] bytes = new byte[32];                     // 256 Bit
         RANDOM.nextBytes(bytes);
@@ -62,4 +66,6 @@ public class TokenService {
             throw new IllegalStateException("SHA-256 ist nicht verfügbar", e);
         }
     }
+
+
 }

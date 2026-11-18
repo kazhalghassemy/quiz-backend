@@ -12,6 +12,9 @@ import de.kazhal.quizbackend.question.evaluation.EvaluationResult;
 import de.kazhal.quizbackend.question.evaluation.SubmittedAnswer;
 import de.kazhal.quizbackend.topic.Topic;
 import de.kazhal.quizbackend.topic.TopicRepository;
+import de.kazhal.quizbackend.user.AppUser;
+import de.kazhal.quizbackend.user.Role;
+import de.kazhal.quizbackend.user.UserRepository;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,6 +38,8 @@ class AttemptRepositoryTest {
     private QuestionRepository questionRepository;
     @Autowired
     private EntityManager entityManager;
+    @Autowired
+    private UserRepository userRepository;
     @Test
     @DisplayName("Versuch mit Antworten und Mehrfachauswahl wird vollständig gespeichert und geladen")
     void saveAndLoadAttempt() {
@@ -64,6 +69,7 @@ class AttemptRepositoryTest {
     @Test
     @DisplayName("Projektion liefert Status und Prozent, neueste zuerst")
     void summaries() {
+        AppUser user = newUser();
         Topic topic = topicRepository.findById(1L).orElseThrow();
         Attempt older = new Attempt(topic, 35, Instant.parse("2026-11-01T10:00:00Z"));
         Attempt newer = new Attempt(topic, 35, Instant.parse("2026-11-02T10:00:00Z"));
@@ -71,11 +77,17 @@ class AttemptRepositoryTest {
         attemptRepository.save(older);
         attemptRepository.save(newer);
         entityManager.flush();
-        List<AttemptSummaryResponse> summaries = attemptRepository.findSummariesByTopicId(1L);
+        List<AttemptSummaryResponse> summaries = attemptRepository.findSummariesByTopicIdAndUserId(1L,user.getId());
         assertThat(summaries).hasSize(2);
         assertThat(summaries.get(0).finished()).isTrue();
 // newer
         assertThat(summaries.get(1).finished()).isFalse();   // older
         assertThat(summaries.get(0).percent()).isZero();
+    }
+
+    private AppUser newUser() {
+        return userRepository.save(new AppUser("repo-" + java.util.UUID.randomUUID() + "@example.com",
+                "$2a$10$abcdefghijklmnopqrstuuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0",
+                "Testperson", Role.LEARNER, Instant.parse("2026-11-01T09:00:00Z")));
     }
 }

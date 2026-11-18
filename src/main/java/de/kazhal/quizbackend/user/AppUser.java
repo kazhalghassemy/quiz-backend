@@ -36,4 +36,5 @@ public class AppUser {
     public String getDisplayName() { return displayName; }
     public Role getRole() { return role; }
     public Instant getCreatedAt() { return createdAt; }
+
 }

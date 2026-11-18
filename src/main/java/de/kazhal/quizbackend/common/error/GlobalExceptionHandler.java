@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -64,6 +65,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         }
         return problem(HttpStatus.UNAUTHORIZED, "Nicht angemeldet", "UNAUTHORIZED",
                 "Für diese Anfrage ist eine Anmeldung nötig");
+    }
+    @ExceptionHandler(AccessDeniedException.class)
+    public ProblemDetail handleAccessDenied(AccessDeniedException ex) {
+        return problem(HttpStatus.FORBIDDEN, "Keine Berechtigung", "FORBIDDEN",
+                "Für diese Aktion fehlt die Berechtigung");
     }
     // -----
     // ----- Spring-MVC-Fehler anpassen (aus ResponseEntityExceptionHandler) ----------

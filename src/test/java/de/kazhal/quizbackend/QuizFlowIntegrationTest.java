@@ -1,7 +1,8 @@
 package de.kazhal.quizbackend;
 
 import com.jayway.jsonpath.JsonPath;
-
+import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +32,16 @@ class QuizFlowIntegrationTest {
     private MockMvc mockMvc;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    private String token;
 
     private Long startAttempt(long topicId) throws Exception {
         String json = mockMvc.perform(post("/api/attempts")
+                        .header("Authorization", "Bearer " + token)
                         .contentType(APPLICATION_JSON)
                         .content("""
                                 { "topicId": %d }
                                 """.formatted(topicId)))
+
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
         return JsonPath.parse(json).read("$.attemptId", Long.class);
@@ -45,6 +49,7 @@ class QuizFlowIntegrationTest {
 
     private ResultActions answer(Long attemptId, String body) throws Exception {
         return mockMvc.perform(post("/api/attempts/{id}/answers", attemptId)
+                .header("Authorization", "Bearer " + token)
                 .contentType(APPLICATION_JSON)
                 .content(body));
     }
@@ -66,7 +71,7 @@ class QuizFlowIntegrationTest {
                 .andExpect(jsonPath("$.pointsAwarded").value(5))
                 .andExpect(jsonPath("$.correctOptionIds").value(contains(30, 31, 33)))
                 .andExpect(jsonPath("$.totalScore").value(15));
-        mockMvc.perform(post("/api/attempts/{id}/finish", attemptId))
+        mockMvc.perform(post("/api/attempts/{id}/finish", attemptId) .header("Authorization", "Bearer " + token) )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.finished").value(true))
                 .andExpect(jsonPath("$.totalScore").value(15))
@@ -106,7 +111,7 @@ class QuizFlowIntegrationTest {
                 """)
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("QUESTION_NOT_IN_ATTEMPT"));
-        mockMvc.perform(post("/api/attempts/{id}/finish", attemptId)).andExpect(status().isOk());
+        mockMvc.perform(post("/api/attempts/{id}/finish", attemptId).header("Authorization", "Bearer " + token)).andExpect(status().isOk());
         answer(attemptId, """
                 { "questionId": 4, "freeText": "select" }
                 """)
@@ -126,7 +131,7 @@ class QuizFlowIntegrationTest {
         try {
             // Ein Admin ändert die Frage nachträglich
             jdbcTemplate.update("UPDATE question SET text = ?, points = ? WHERE id = 1", "Geänderter Fragetext", 50);
-            mockMvc.perform(get("/api/attempts/{id}", attemptId))
+            mockMvc.perform(get("/api/attempts/{id}", attemptId).header("Authorization", "Bearer " + token)  )
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.answers[0].questionText").value(originalText))
                     .andExpect(jsonPath("$.answers[0].pointsAwarded").value(10))
@@ -136,5 +141,23 @@ class QuizFlowIntegrationTest {
             jdbcTemplate.update("UPDATE question SET text = ?, points = ? WHERE id = 1",
                     originalText, 10);
         }
+    }
+    @BeforeEach
+    void registerAndLogin() throws Exception {
+        String email = "learner-" + UUID.randomUUID() + "@example.com";
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(APPLICATION_JSON)
+                        .content("""
+                                { "email": "%s", "password": "geheim123", "displayName": "Lernende" }
+                                """.formatted(email)))
+                .andExpect(status().isCreated());
+        String json = mockMvc.perform(post("/api/auth/login")
+                        .contentType(APPLICATION_JSON)
+                        .content("""
+                                { "email": "%s", "password": "geheim123" }
+                                """.formatted(email)))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        token = JsonPath.parse(json).read("$.token");
     }
 }
