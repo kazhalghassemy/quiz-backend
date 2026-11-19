@@ -1,0 +1,16 @@
+# Build-Ergebnisse und IDE
+target/
+.idea/
+*.iml
+.vscode/
+# Git und lokale Dateien
+.git/
+logs/
+http/
+*.md
+# Geheimnisse
+*.env
+# Docker-Dateien selbst
+Dockerfile
+.dockerignore
+compose.yaml
