@@ -1,12 +1,12 @@
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
 logging:
   level:
     root: WARN
     de.kazhal.quizbackend: INFO
-
 management:
   endpoints:
     web:
       exposure:
         include: health
-
-

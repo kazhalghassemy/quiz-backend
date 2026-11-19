@@ -1,0 +1,77 @@
+### 1. Health -> UP
+GET http://localhost:8080/actuator/health
+
+### 2. Lena registriert sich -> 201
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{ "email": "lena@example.com", "password": "geheim123", "displayName": "Lena" }
+
+### 3. Lena meldet sich an -> 200 mit Token
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{ "email": "lena@example.com", "password": "geheim123" }
+> {% client.global.set("lenaToken", response.body.token); %}
+
+### 4. Themen ansehen (öffentlich)
+GET http://localhost:8080/api/topics
+
+### 5. Quiz "Datenbanken" starten -> 201
+POST http://localhost:8080/api/attempts
+Authorization: Bearer {{lenaToken}}
+Content-Type: application/json
+
+{ "topicId": 2 }
+> {% client.global.set("lenaAttemptId", response.body.attemptId);
+
+### 6. Frage 4 (Freitext) -> richtig
+POST http://localhost:8080/api/attempts/{{lenaAttemptId}}/answers
+Authorization: Bearer {{lenaToken}}
+Content-Type: application/json
+
+{ "questionId": 4, "freeText": "select" }
+
+### 7. Frage 5 (Multiple Choice) -> teilweise richtig
+POST http://localhost:8080/api/attempts/{{lenaAttemptId}}/answers
+Authorization: Bearer {{lenaToken}}
+Content-Type: application/json
+
+{ "questionId": 5, "selectedOptionIds": [30, 31, 32] }
+
+### 8. Abschließen -> 15 von 30 Punkten (50 %), Frage 6 unbeantwortet
+POST http://localhost:8080/api/attempts/{{lenaAttemptId}}/finish
+Authorization: Bearer {{lenaToken}}
+
+### 9. Meine Versuche zu Thema 2
+GET http://localhost:8080/api/topics/2/attempts
+Authorization: Bearer {{lenaToken}}
+
+### 10. Lena darf keine Themen anlegen -> 403
+POST http://localhost:8080/api/topics
+Authorization: Bearer {{lenaToken}}
+Content-Type: application/json
+
+{ "name": "Docker" }
+
+### 11. Admin meldet sich mit dem Passwort aus .env an -> 200
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{ "email": "admin@quiz.local", "password": "quiz" }
+> {% client.global.set("adminToken", response.body.token); %}
+
+### 12. Admin legt ein Thema an -> 201
+POST http://localhost:8080/api/topics
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "name": "Docker", "description": "Images, Container, Compose" }
+
+### 13. Admin liest Lenas Versuch -> 200
+GET http://localhost:8080/api/attempts/{{lenaAttemptId}}
+Authorization: Bearer {{adminToken}}
+
+### 14. Lena meldet sich ab -> 204, danach /me -> 401
+POST http://localhost:8080/api/auth/logout
+Authorization: Bearer {{lenaToken}}
