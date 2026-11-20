@@ -58,7 +58,7 @@ Content-Type: application/json
 POST http://localhost:8080/api/auth/login
 Content-Type: application/json
 
-{ "email": "admin@quiz.local", "password": "quiz" }
+{ "email": "admin@quiz.local", "password": "{{adminPassword}}" }
 > {% client.global.set("adminToken", response.body.token); %}
 
 ### 12. Admin legt ein Thema an -> 201
